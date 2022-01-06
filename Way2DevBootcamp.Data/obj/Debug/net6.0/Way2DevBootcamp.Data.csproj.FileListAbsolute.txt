@@ -1,0 +1,17 @@
+C:\Projects\bootcamp\Way2DevBootcamp.Data\bin\Debug\net6.0\Way2DevBootcamp.Data.deps.json
+C:\Projects\bootcamp\Way2DevBootcamp.Data\bin\Debug\net6.0\Way2DevBootcamp.Data.runtimeconfig.json
+C:\Projects\bootcamp\Way2DevBootcamp.Data\bin\Debug\net6.0\Way2DevBootcamp.Data.dll
+C:\Projects\bootcamp\Way2DevBootcamp.Data\bin\Debug\net6.0\ref\Way2DevBootcamp.Data.dll
+C:\Projects\bootcamp\Way2DevBootcamp.Data\bin\Debug\net6.0\Way2DevBootcamp.Data.pdb
+C:\Projects\bootcamp\Way2DevBootcamp.Data\bin\Debug\net6.0\Way2DevBootcamp.Domain.dll
+C:\Projects\bootcamp\Way2DevBootcamp.Data\bin\Debug\net6.0\Way2DevBootcamp.Domain.pdb
+C:\Projects\bootcamp\Way2DevBootcamp.Data\obj\Debug\net6.0\Way2DevBootcamp.Data.csproj.AssemblyReference.cache
+C:\Projects\bootcamp\Way2DevBootcamp.Data\obj\Debug\net6.0\Way2DevBootcamp.Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\bootcamp\Way2DevBootcamp.Data\obj\Debug\net6.0\Way2DevBootcamp.Data.AssemblyInfoInputs.cache
+C:\Projects\bootcamp\Way2DevBootcamp.Data\obj\Debug\net6.0\Way2DevBootcamp.Data.AssemblyInfo.cs
+C:\Projects\bootcamp\Way2DevBootcamp.Data\obj\Debug\net6.0\Way2DevBootcamp.Data.csproj.CoreCompileInputs.cache
+C:\Projects\bootcamp\Way2DevBootcamp.Data\obj\Debug\net6.0\Way2DevBootcamp.Data.csproj.CopyComplete
+C:\Projects\bootcamp\Way2DevBootcamp.Data\obj\Debug\net6.0\Way2DevBootcamp.Data.dll
+C:\Projects\bootcamp\Way2DevBootcamp.Data\obj\Debug\net6.0\ref\Way2DevBootcamp.Data.dll
+C:\Projects\bootcamp\Way2DevBootcamp.Data\obj\Debug\net6.0\Way2DevBootcamp.Data.pdb
+C:\Projects\bootcamp\Way2DevBootcamp.Data\obj\Debug\net6.0\Way2DevBootcamp.Data.genruntimeconfig.cache
