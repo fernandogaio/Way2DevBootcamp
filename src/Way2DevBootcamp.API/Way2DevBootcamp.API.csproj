@@ -7,8 +7,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AutoMapper" Version="10.1.1" />
-		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+		<PackageReference Include="AutoMapper" Version="11.0.1" />
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.1.0" />
+		<PackageReference Include="MediatR" Version="10.0.1" />
+		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -23,11 +26,14 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Way2DevBootcamp.Data\Way2DevBootcamp.Data.csproj" />
 		<ProjectReference Include="..\Way2DevBootcamp.Domain\Way2DevBootcamp.Domain.csproj" />
+		<ProjectReference Include="..\Way2DevBootcamp.Application\Way2DevBootcamp.Application.csproj" />
+		<ProjectReference Include="..\Way2DevBootcamp.Identity\Way2DevBootcamp.Identity.csproj" />
 	</ItemGroup>
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
+		<UserSecretsId>b4f7f6be-873c-4056-8d33-926bd4f866af</UserSecretsId>
 	</PropertyGroup>
 
 </Project>

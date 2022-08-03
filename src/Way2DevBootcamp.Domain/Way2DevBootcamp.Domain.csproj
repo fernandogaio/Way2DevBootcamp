@@ -16,4 +16,8 @@
     <None Remove="obj\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.1.2" />
+  </ItemGroup>
+
 </Project>

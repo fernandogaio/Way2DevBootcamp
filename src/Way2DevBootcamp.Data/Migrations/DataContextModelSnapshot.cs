@@ -17,7 +17,7 @@ namespace Way2DevBootcamp.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.1")
+                .HasAnnotation("ProductVersion", "6.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -25,13 +25,12 @@ namespace Way2DevBootcamp.Data.Migrations
             modelBuilder.Entity("Way2DevBootcamp.Domain.Entities.Categoria", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Nome")
                         .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
                         .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
@@ -264,6 +263,8 @@ namespace Way2DevBootcamp.Data.Migrations
 
                     b.Property<string>("Codigo")
                         .IsRequired()
+                        .HasMaxLength(6)
+                        .IsUnicode(false)
                         .HasColumnType("varchar(6)");
 
                     b.Property<DateTime>("DataCadastro")
@@ -271,20 +272,82 @@ namespace Way2DevBootcamp.Data.Migrations
 
                     b.Property<string>("Descricao")
                         .IsRequired()
+                        .HasMaxLength(500)
+                        .IsUnicode(false)
                         .HasColumnType("varchar(500)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
                         .HasColumnType("varchar(100)");
 
                     b.Property<decimal>("Preco")
-                        .HasColumnType("numeric(18,2)");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoriaId");
 
                     b.ToTable("Produto", (string)null);
+                });
+
+            modelBuilder.Entity("Way2DevBootcamp.Domain.Entities.Venda", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("DataVenda")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StatusPedido")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasMaxLength(36)
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("ValorTotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Venda", (string)null);
+                });
+
+            modelBuilder.Entity("Way2DevBootcamp.Domain.Entities.VendaItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<decimal>("Preco")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProdutoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantidade")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VendaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.HasIndex("VendaId");
+
+                    b.ToTable("VendaItem", (string)null);
                 });
 
             modelBuilder.Entity("Way2DevBootcamp.Domain.Entities.Produto", b =>
@@ -298,9 +361,33 @@ namespace Way2DevBootcamp.Data.Migrations
                     b.Navigation("Categoria");
                 });
 
+            modelBuilder.Entity("Way2DevBootcamp.Domain.Entities.VendaItem", b =>
+                {
+                    b.HasOne("Way2DevBootcamp.Domain.Entities.Produto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Way2DevBootcamp.Domain.Entities.Venda", "Venda")
+                        .WithMany("Itens")
+                        .HasForeignKey("VendaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Produto");
+
+                    b.Navigation("Venda");
+                });
+
             modelBuilder.Entity("Way2DevBootcamp.Domain.Entities.Categoria", b =>
                 {
                     b.Navigation("Produtos");
+                });
+
+            modelBuilder.Entity("Way2DevBootcamp.Domain.Entities.Venda", b =>
+                {
+                    b.Navigation("Itens");
                 });
 #pragma warning restore 612, 618
         }

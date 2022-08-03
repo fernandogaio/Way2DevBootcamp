@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Way2DevBootcamp.API.ViewModels;
+using Way2DevBootcamp.Application.ViewModels;
 using Way2DevBootcamp.Domain.Interfaces;
 
 namespace Way2DevBootcamp.API.Controllers {
+    [Authorize]
     [ApiController]
     [Route("v1/categorias")]
     public class CategoriasController : ControllerBase {
@@ -41,9 +43,8 @@ namespace Way2DevBootcamp.API.Controllers {
         public async Task<ActionResult<CategoriaViewModelOutput>> GetById(int id) {
             var categoria = await _uow.Categorias.GetById(id);
 
-            if (categoria == null) {
+            if (categoria is null)
                 return NotFound();
-            }
 
             var categoriaViewModelOutput = _mapper.Map<CategoriaViewModelOutput>(categoria);
 
