@@ -7,22 +7,22 @@ public class VendaMap : IEntityTypeConfiguration<Venda> {
     public void Configure(EntityTypeBuilder<Venda> builder) {
         builder.ToTable(nameof(Venda));
 
-        builder.Property(p => p.UsuarioId)
+        builder.Property(v => v.UsuarioId)
             .HasMaxLength(36);
 
-        builder.Property(p => p.DataVenda)
+        builder.Property(v => v.DataVenda)
             .IsRequired();
 
-        builder.Property(p => p.StatusPedido)
+        builder.Property(v => v.StatusPedido)
             .IsRequired();
 
-        builder.Property(p => p.ValorTotal)
+        builder.Property(v => v.ValorTotal)
             .HasColumnType("decimal")
             .HasPrecision(18, 2)
             .IsRequired();
 
-        builder.HasMany(p => p.Itens)
-            .WithOne(p => p.Venda)
-            .HasForeignKey(p => p.VendaId);
+        builder.HasMany(v => v.Itens)
+            .WithOne(v => v.Venda)
+            .HasForeignKey(v => v.VendaId);
     }
 }

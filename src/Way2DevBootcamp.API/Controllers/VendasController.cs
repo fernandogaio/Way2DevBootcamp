@@ -5,11 +5,9 @@ using System.Security.Claims;
 using Way2DevBootcamp.Application.Commands;
 using Way2DevBootcamp.Application.Queries;
 using Way2DevBootcamp.Application.ViewModels;
-using Way2DevBootcamp.Identity;
-using ClaimTypes = System.Security.Claims.ClaimTypes;
 
 namespace Way2DevBootcamp.API.Controllers;
-[Authorize(Roles = Roles.Admin)]
+[Authorize]
 [ApiController]
 [Route("v1/vendas")]
 public class VendasController : ControllerBase {
@@ -23,7 +21,7 @@ public class VendasController : ControllerBase {
     /// </summary>
     /// <returns>Response com todas as vendas</returns>
     /// <response code="200">Retorna todas as vendas</response>
-    [HttpGet, AllowAnonymous]
+    [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<VendaViewModel>))]
     public async Task<ActionResult<IEnumerable<VendaViewModel>>> Get() {
         var query = new GetVendasQuery();
@@ -37,7 +35,7 @@ public class VendasController : ControllerBase {
     /// <returns>Response com a venda</returns>
     /// <response code="200">Retorna a venda</response>
     /// <response code="404">Caso não encontre a venda</response>
-    [HttpGet("{id}"), AllowAnonymous]
+    [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(VendaViewModel))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<VendaViewModel>> GetById(int id) {
@@ -56,12 +54,12 @@ public class VendasController : ControllerBase {
     /// <returns>Response com nova venda</returns>
     /// <response code="201">Venda criado com sucesso</response>
     /// <response code="400">Erro na requisição</response>
-    [HttpPost(), AllowAnonymous]
+    [HttpPost()]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Create([FromBody] CreateVendaCommand command) {
         var identity = HttpContext.User.Identity as ClaimsIdentity;
-        var usuarioId = identity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var usuarioId = identity?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (usuarioId is null)
             return BadRequest();
 
@@ -71,6 +69,6 @@ public class VendasController : ControllerBase {
         if(response.Errors.Any())
             return BadRequest(response.Errors);
 
-        return Created(nameof(GetById), new { id = response });
+        return Created(nameof(GetById), new { id = response.Result });
     }
 }

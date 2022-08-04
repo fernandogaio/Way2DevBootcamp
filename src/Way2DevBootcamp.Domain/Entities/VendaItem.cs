@@ -9,10 +9,10 @@ public class VendaItem : Entity {
     public virtual Venda Venda { get; set; }
     public virtual Produto Produto { get; set; }
 
-    public VendaItem(double preco, int quantidade, int vendaId, int produtoId) {
+    public VendaItem(double preco, int quantidade, int produtoId, int vendaId) {
         Preco = preco;
         Quantidade = quantidade;
-        VendaId = vendaId;
         ProdutoId = produtoId;
+        VendaId = vendaId;
     }
 }

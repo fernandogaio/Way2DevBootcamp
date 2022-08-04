@@ -25,10 +25,10 @@ public class UpdateProdutoCommandValidator : AbstractValidator<UpdateProdutoComm
             .NotEmpty()
             .WithMessage("O preço deve ser maior que 0.");
 
-        RuleFor(x => x.CategoriaId)
+        RuleFor(p => p.CategoriaId)
             .NotEmpty()
                 .WithMessage("A categoria deve ser informada.")
             .MustAsync(async (categoriaId, cancellation) => await _uow.Categorias.Exists(categoriaId))
-                .WithMessage("A categoria informada não existe");
+                .WithMessage("A categoria informada não existe.");
     }
 }

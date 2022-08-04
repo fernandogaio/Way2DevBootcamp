@@ -31,5 +31,9 @@ public class ProdutoMap : IEntityTypeConfiguration<Produto> {
         builder.HasOne(p => p.Categoria)
             .WithMany(p => p.Produtos)
             .HasForeignKey(p => p.CategoriaId);
+
+        builder.HasMany(p => p.VendaItens)
+            .WithOne(p => p.Produto)
+            .HasForeignKey(p => p.ProdutoId);
     }
 }

@@ -1,16 +1,21 @@
 ﻿using MediatR;
+using System.Collections.ObjectModel;
 
 namespace Way2DevBootcamp.Application.Notifications;
 public class ErrorNotification : INotification {
-    public List<string> Errors { get; }
+    private readonly List<string> _errors = new();
+
+    public IEnumerable<string> Errors { get; }
+
+    public ErrorNotification() => Errors = new ReadOnlyCollection<string>(_errors);
 
     public ErrorNotification AddError(string error) {
-        Errors.Add(error);
+        _errors.Add(error);
         return this;
     }
 
     public ErrorNotification AddErrors(IEnumerable<string> errors) {
-        Errors.AddRange(errors);
+        _errors.AddRange(errors);
         return this;
     }
 }

@@ -19,23 +19,18 @@ public class CreateVendaCommandHandler : IRequestHandler<CreateVendaCommand, Com
     }
 
     public async Task<CommandResponse> Handle(CreateVendaCommand command, CancellationToken cancellationToken) {
-        var venda = new Venda(command.UsuarioId,
-                              DateTime.Now,
-                              EnumStatusPedido.Pendente,
-                              command.Itens.Sum(i => i.Preco));
-
         try {
+            var venda = new Venda(command.UsuarioId,
+                                  DateTime.Now,
+                                  EnumStatusPedido.Pendente,
+                                  SomarValorTotal(command));
+
             await _uow.BeginTransaction();
+
             await _uow.Vendas.Add(venda);
             await _uow.Commit();
+            await AdicionarItens(command, venda);
 
-            foreach (var item in command.Itens) {
-                await _uow.VendaItens.Add(new VendaItem(item.Preco,
-                                                        item.Quantidade,
-                                                        item.ProdutoId,
-                                                        venda.Id));
-            }
-            await _uow.Commit();
             await _uow.EndTransaction();
 
             await _mediator.Publish(new VendaCreatedEvent(venda.Id), cancellationToken);
@@ -45,5 +40,23 @@ public class CreateVendaCommandHandler : IRequestHandler<CreateVendaCommand, Com
             await _mediator.Publish(new ErrorNotification().AddError(msg), cancellationToken);
             return new CommandResponse().AddError(msg);
         }
+    }
+
+    private double SomarValorTotal(CreateVendaCommand command) {
+        double valorTotal = 0;
+        foreach (var item in command.Itens)
+            valorTotal += item.Preco * item.Quantidade;
+
+        return valorTotal;
+    }
+
+    private async Task AdicionarItens(CreateVendaCommand command, Venda venda) {
+        foreach (var item in command.Itens) {
+            await _uow.VendaItens.Add(new VendaItem(item.Preco,
+                                                    item.Quantidade,
+                                                    item.ProdutoId,
+                                                    venda.Id));
+        }
+        await _uow.Commit();
     }
 }

@@ -21,11 +21,11 @@ public class ValidationRequestBehavior<TRequest, TResponse> : IPipelineBehavior<
             .ToList();
 
         return failures.Any()
-            ? Errors(failures) as Task<TResponse>
+            ? Errors(failures)
             : next();
     }
 
-    private CommandResponse Errors(IEnumerable<ValidationFailure> failures) {
+    private Task<TResponse> Errors(IEnumerable<ValidationFailure> failures) {
         var response = new CommandResponse();
 
         foreach (var failure in failures)
@@ -33,6 +33,6 @@ public class ValidationRequestBehavior<TRequest, TResponse> : IPipelineBehavior<
         
         _mediator.Publish(new ErrorNotification().AddErrors(response.Errors));
 
-        return response;
+        return Task.FromResult(response as TResponse);
     }
 }

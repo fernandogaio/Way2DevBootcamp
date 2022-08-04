@@ -8,6 +8,7 @@ public class Produto : Entity {
     public int CategoriaId { get; set; }
 
     public virtual Categoria Categoria { get; set; }
+    public virtual ICollection<VendaItem> VendaItens { get; set; }
 
     public Produto(string codigo, string nome, string descricao, double preco, int categoriaId) {
         Codigo = codigo;

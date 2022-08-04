@@ -5,7 +5,6 @@ using Way2DevBootcamp.Application.Interfaces;
 using Way2DevBootcamp.Application.ViewModels;
 
 namespace Way2DevBootcamp.API.Controllers;
-
 [ApiController]
 [Route("v1/usuarios")]
 public class UsuariosController : ControllerBase {

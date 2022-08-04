@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Way2DevBootcamp.Application.Commands;
 using Way2DevBootcamp.Application.Queries;
 using Way2DevBootcamp.Application.ViewModels;
-using Way2DevBootcamp.Identity;
 
 namespace Way2DevBootcamp.API.Controllers;
-[Authorize(Roles = Roles.Admin)]
+[Authorize]
 [ApiController]
 [Route("v1/produtos")]
 public class ProdutosController : ControllerBase {
@@ -21,7 +20,7 @@ public class ProdutosController : ControllerBase {
     /// </summary>
     /// <returns>Response com todos os produtos</returns>
     /// <response code="200">Retorna todos os produtos</response>
-    [HttpGet, AllowAnonymous]
+    [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ProdutoViewModel>))]
     public async Task<ActionResult<IEnumerable<ProdutoViewModel>>> Get() {
         var query = new GetProdutosQuery();
@@ -35,7 +34,7 @@ public class ProdutosController : ControllerBase {
     /// <returns>Response com o produto</returns>
     /// <response code="200">Retorna o produto</response>
     /// <response code="404">Caso não encontre o produto</response>
-    [HttpGet("{id}"), AllowAnonymous]
+    [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProdutoViewModel))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ProdutoViewModel>> GetById(int id) {
@@ -54,7 +53,7 @@ public class ProdutosController : ControllerBase {
     /// <returns>Response com novo produto</returns>
     /// <response code="201">Produto criado com sucesso</response>
     /// <response code="400">Erro na requisição</response>
-    [HttpPost, AllowAnonymous]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Create([FromBody] CreateProdutoCommand command) {
@@ -63,7 +62,7 @@ public class ProdutosController : ControllerBase {
         if (response.Errors.Any())
             return BadRequest(response.Errors);
 
-        return Created(nameof(GetById), new { id = response });
+        return Created(nameof(GetById), new { id = response.Result });
     }
 
     /// <summary>
@@ -74,7 +73,7 @@ public class ProdutosController : ControllerBase {
     /// <response code="200">Produto criado com sucesso</response>
     /// <response code="400">Erro na requisição</response>
     /// <response code="404">Produto não encontrado</response>
-    [HttpPut("{id}"), AllowAnonymous]
+    [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -85,7 +84,7 @@ public class ProdutosController : ControllerBase {
         if (response.Errors.Any())
             return BadRequest(response.Errors);
 
-        return Ok(response);
+        return Ok(response.Result);
     }
 
     /// <summary>
@@ -94,7 +93,7 @@ public class ProdutosController : ControllerBase {
     /// <param name="id">Id do produto a ser removido</param>
     /// <response code="204">Produto removido</response>
     /// <response code="404">Produto não encontrado</response>
-    [HttpDelete("{id}"), AllowAnonymous]
+    [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(int id) {

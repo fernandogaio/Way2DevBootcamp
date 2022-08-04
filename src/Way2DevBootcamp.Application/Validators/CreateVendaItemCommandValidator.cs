@@ -9,17 +9,16 @@ public class CreateVendaItemCommandValidator : AbstractValidator<CreateVendaItem
     public CreateVendaItemCommandValidator(IUnitOfWork uow) {
         _uow = uow;
 
-        RuleFor(p => p.Preco)
-            .NotEmpty()
-            .WithMessage("O preço deve ser maior que 0.");
+        RuleFor(i => i.Preco)
+            .NotEmpty().WithMessage("O preço deve ser maior que 0.");
 
-        RuleFor(p => p.Quantidade)
+        RuleFor(i => i.Quantidade)
             .NotEmpty().WithMessage("Campo quantidade é obrigatório.");
 
-        RuleFor(x => x.ProdutoId)
+        RuleFor(i => i.ProdutoId)
             .NotEmpty()
                 .WithMessage("O produto deve ser informado.")
             .MustAsync(async (produtoId, cancellation) => await _uow.Produtos.Exists(produtoId))
-                .WithMessage("O produto informado não existe");
+                .WithMessage("O produto informado não existe.");
     }
 }
