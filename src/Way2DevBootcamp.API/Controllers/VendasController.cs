@@ -39,12 +39,13 @@ public class VendasController : ControllerBase {
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(VendaViewModel))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<VendaViewModel>> GetById(int id) {
-        var query = new GetVendaByIdQuery { Id = id };
+        var query = new GetVendaByIdQuery(id);
+        var venda = await _sender.Send(query);
 
-        if (query is null)
+        if (venda is null)
             return NotFound();
 
-        return Ok(await _sender.Send(query));
+        return Ok(venda);
     }
 
     /// <summary>
@@ -59,10 +60,8 @@ public class VendasController : ControllerBase {
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Create([FromBody] CreateVendaCommand command) {
         var identity = HttpContext.User.Identity as ClaimsIdentity;
-        var usuarioId = identity?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        if (usuarioId is null)
-            return BadRequest();
-
+        var usuarioId = identity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
         command.SetUsuarioId(usuarioId);
         var response = await _sender.Send(command);
 

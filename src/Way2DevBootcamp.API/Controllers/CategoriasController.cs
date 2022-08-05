@@ -1,21 +1,18 @@
-﻿using AutoMapper;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Way2DevBootcamp.Application.Queries;
 using Way2DevBootcamp.Application.ViewModels;
-using Way2DevBootcamp.Domain.Interfaces;
 
 namespace Way2DevBootcamp.API.Controllers {
     [Authorize]
     [ApiController]
     [Route("v1/categorias")]
     public class CategoriasController : ControllerBase {
-        private readonly IUnitOfWork _uow;
-        private readonly IMapper _mapper;
+        private readonly ISender _sender;
 
-        public CategoriasController(IUnitOfWork uow, IMapper mapper) {
-            _uow = uow;
-            _mapper = mapper;
-        }
+        public CategoriasController(ISender sender)
+            => _sender = sender;
 
         /// <summary>
         /// Retorna todas as categorias
@@ -23,11 +20,10 @@ namespace Way2DevBootcamp.API.Controllers {
         /// <returns>Response com todas as categorias</returns>
         /// <response code="200">Retorna todas as categorias</response>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<CategoriaViewModelOutput>))]
-        public async Task<ActionResult<IEnumerable<CategoriaViewModelOutput>>> Get() {
-            var categoriasViewModelOutput = _mapper.Map<IEnumerable<CategoriaViewModelOutput>>(await _uow.Categorias.GetAll());
-
-            return Ok(categoriasViewModelOutput);
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<CategoriaViewModel>))]
+        public async Task<ActionResult<IEnumerable<CategoriaViewModel>>> Get() {
+            var query = new GetCategoriasQuery();
+            return Ok(await _sender.Send(query));
         }
 
         /// <summary>
@@ -38,17 +34,16 @@ namespace Way2DevBootcamp.API.Controllers {
         /// <response code="200">Retorna a categoria</response>
         /// <response code="404">Caso não encontre a categoria</response>
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CategoriaViewModelOutput))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CategoriaViewModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<CategoriaViewModelOutput>> GetById(int id) {
-            var categoria = await _uow.Categorias.GetById(id);
+        public async Task<ActionResult<CategoriaViewModel>> GetById(int id) {
+            var query = new GetCategoriaByIdQuery(id);
+            var categoria = await _sender.Send(query);
 
             if (categoria is null)
                 return NotFound();
 
-            var categoriaViewModelOutput = _mapper.Map<CategoriaViewModelOutput>(categoria);
-
-            return Ok(categoriaViewModelOutput);
+            return Ok(categoria);
         }
     }
 }

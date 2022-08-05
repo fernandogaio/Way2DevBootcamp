@@ -6,8 +6,6 @@ public interface IUnitOfWork {
     IVendaItemRepository VendaItens { get; }
 
     Task<bool> Commit();
-    Task BeginTransaction();
-    Task EndTransaction();
     void Dispose();
     Task Rollback();
 }

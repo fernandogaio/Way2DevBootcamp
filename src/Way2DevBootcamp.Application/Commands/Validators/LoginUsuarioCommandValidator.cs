@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Way2DevBootcamp.Application.Validators {
+namespace Way2DevBootcamp.Application.Commands.Validators {
     internal class LoginUsuarioCommandValidator {
     }
 }

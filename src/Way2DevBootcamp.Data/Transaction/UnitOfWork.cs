@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
-using Way2DevBootcamp.Data.Context;
+﻿using Way2DevBootcamp.Data.Context;
 using Way2DevBootcamp.Data.Repositories;
 using Way2DevBootcamp.Domain.Entities;
 using Way2DevBootcamp.Domain.Interfaces;
@@ -8,7 +7,6 @@ namespace Way2DevBootcamp.Data.Transaction;
 public class UnitOfWork : IUnitOfWork {
     private readonly DataContext _dataContext;
     private readonly IRepositoryBase<Categoria> _repositoryBaseCategoria;
-    private IDbContextTransaction DbContextTransaction;
 
     public IProdutoRepository Produtos { get; private set; }
     public ICategoriaRepository Categorias { get; private set; }
@@ -29,18 +27,6 @@ public class UnitOfWork : IUnitOfWork {
         var success = (await _dataContext.SaveChangesAsync()) > 0;
 
         return success;
-    }
-
-    public async Task BeginTransaction() =>
-        DbContextTransaction = await _dataContext.Database.BeginTransactionAsync();
-
-    public async Task EndTransaction() {
-        if (DbContextTransaction is null)
-            throw new Exception("A transação não foi iniciada, portanto não é possível finalizá-la!");
-
-        await DbContextTransaction.CommitAsync();
-        await _dataContext.DisposeAsync();
-        return;
     }
 
     public void Dispose() =>

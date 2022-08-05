@@ -1,8 +1,7 @@
 ﻿using FluentValidation;
-using Way2DevBootcamp.Application.Commands;
 using Way2DevBootcamp.Domain.Interfaces;
 
-namespace Way2DevBootcamp.Application.Validators;
+namespace Way2DevBootcamp.Application.Commands.Validators;
 public class CreateVendaItemCommandValidator : AbstractValidator<CreateVendaItemCommand> {
     private readonly IUnitOfWork _uow;
 

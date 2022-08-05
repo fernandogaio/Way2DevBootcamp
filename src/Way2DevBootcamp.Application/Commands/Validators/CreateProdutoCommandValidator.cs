@@ -2,11 +2,11 @@
 using Way2DevBootcamp.Application.Commands;
 using Way2DevBootcamp.Domain.Interfaces;
 
-namespace Way2DevBootcamp.Application.Validators;
-public class UpdateProdutoCommandValidator : AbstractValidator<UpdateProdutoCommand> {
+namespace Way2DevBootcamp.Application.Commands.Validators;
+public class CreateProdutoCommandValidator : AbstractValidator<CreateProdutoCommand> {
     private readonly IUnitOfWork _uow;
 
-    public UpdateProdutoCommandValidator(IUnitOfWork uow) {
+    public CreateProdutoCommandValidator(IUnitOfWork uow) {
         _uow = uow;
 
         RuleFor(p => p.Codigo)

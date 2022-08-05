@@ -38,12 +38,13 @@ public class ProdutosController : ControllerBase {
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProdutoViewModel))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ProdutoViewModel>> GetById(int id) {
-        var query = new GetProdutoByIdQuery { Id = id };
+        var query = new GetProdutoByIdQuery(id);
+        var produto = await _sender.Send(query);
 
-        if (query is null)
+        if (produto is null)
             return NotFound();
 
-        return Ok(await _sender.Send(query));
+        return Ok(produto);
     }
 
     /// <summary>
@@ -97,7 +98,7 @@ public class ProdutosController : ControllerBase {
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(int id) {
-        var command = new DeleteProdutoCommand { Id = id };
+        var command = new DeleteProdutoCommand(id);
         await _sender.Send(command);
 
         return NoContent();
