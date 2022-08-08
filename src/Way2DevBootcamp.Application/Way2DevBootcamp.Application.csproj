@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Way2DevBootcamp.Domain\Way2DevBootcamp.Domain.csproj" />
+    <ProjectReference Include="..\Way2DevBootcamp.Identity\Way2DevBootcamp.Identity.csproj" />
   </ItemGroup>
 
 </Project>

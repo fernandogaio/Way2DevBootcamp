@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Way2DevBootcamp.Application.Queries;
-using Way2DevBootcamp.Application.ViewModels;
+using Way2DevBootcamp.Application.Categorias.Queries;
+using Way2DevBootcamp.Application.Categorias.ViewModels;
 
 namespace Way2DevBootcamp.API.Controllers {
     [Authorize]

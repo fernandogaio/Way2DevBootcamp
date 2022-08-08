@@ -3,12 +3,12 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Way2DevBootcamp.Application.Core;
-using Way2DevBootcamp.Application.Interfaces;
 using Way2DevBootcamp.Data.Context;
 using Way2DevBootcamp.Data.Repositories;
 using Way2DevBootcamp.Data.Transaction;
 using Way2DevBootcamp.Domain.Interfaces;
 using Way2DevBootcamp.Identity.Data;
+using Way2DevBootcamp.Identity.Interfaces;
 using Way2DevBootcamp.Identity.Services;
 
 namespace Way2DevBootcamp.API.IoC;

@@ -2,7 +2,7 @@
 
 namespace Way2DevBootcamp.Application.Core;
 public class CommandResponse {
-    private readonly IList<string> _messages = new List<string>();
+    private readonly List<string> _messages = new();
 
     public IEnumerable<string> Errors { get; }
     public object Result { get; }
@@ -13,6 +13,11 @@ public class CommandResponse {
 
     public CommandResponse AddError(string message) {
         _messages.Add(message);
+        return this;
+    }
+
+    public CommandResponse AddErrors(IEnumerable<string> messages) {
+        _messages.AddRange(messages);
         return this;
     }
 }

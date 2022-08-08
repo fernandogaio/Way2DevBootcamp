@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Way2DevBootcamp.Application.Commands;
-using Way2DevBootcamp.Application.Queries;
-using Way2DevBootcamp.Application.ViewModels;
+using Way2DevBootcamp.Application.Vendas.Commands;
+using Way2DevBootcamp.Application.Vendas.Queries;
+using Way2DevBootcamp.Application.Vendas.ViewModels;
 
 namespace Way2DevBootcamp.API.Controllers;
 [Authorize]
@@ -45,6 +45,9 @@ public class VendasController : ControllerBase {
         if (venda is null)
             return NotFound();
 
+        if (venda.Cancelada)
+            return BadRequest("Esta venda está cancelada.");
+
         return Ok(venda);
     }
 
@@ -69,5 +72,26 @@ public class VendasController : ControllerBase {
             return BadRequest(response.Errors);
 
         return Created(nameof(GetById), new { id = response.Result });
+    }
+
+    /// <summary>
+    /// Cancela uma venda
+    /// </summary>
+    /// <param name="id">Id da venda a ser cancelada</param>
+    /// <response code="200">Venda cancelada com sucesso</response>
+    /// <response code="400">Erro na requisição</response>
+    /// <response code="404">Venda não encontrada</response>
+    [HttpPatch("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> Create([FromRoute] int id) {
+        var command = new CancellationVendaCommand(id);
+        var response = await _sender.Send(command);
+
+        if (response.Errors.Any())
+            return BadRequest(response.Errors);
+
+        return Ok(response.Result);
     }
 }

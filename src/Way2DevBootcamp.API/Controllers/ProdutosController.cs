@@ -1,9 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Way2DevBootcamp.Application.Commands;
-using Way2DevBootcamp.Application.Queries;
-using Way2DevBootcamp.Application.ViewModels;
+using Way2DevBootcamp.Application.Produtos.Commands;
+using Way2DevBootcamp.Application.Produtos.Queries;
+using Way2DevBootcamp.Application.Produtos.ViewModels;
 
 namespace Way2DevBootcamp.API.Controllers;
 [Authorize]
@@ -37,7 +37,7 @@ public class ProdutosController : ControllerBase {
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProdutoViewModel))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ProdutoViewModel>> GetById(int id) {
+    public async Task<ActionResult<ProdutoViewModel>> GetById([FromQuery] int id) {
         var query = new GetProdutoByIdQuery(id);
         var produto = await _sender.Send(query);
 
@@ -78,7 +78,7 @@ public class ProdutosController : ControllerBase {
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Update(int id, [FromBody] UpdateProdutoCommand command) {
+    public async Task<ActionResult> Update([FromRoute] int id, [FromBody] UpdateProdutoCommand command) {
         command.SetId(id);
         var response = await _sender.Send(command);
 
@@ -97,7 +97,7 @@ public class ProdutosController : ControllerBase {
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Delete(int id) {
+    public async Task<ActionResult> Delete([FromRoute] int id) {
         var command = new DeleteProdutoCommand(id);
         await _sender.Send(command);
 

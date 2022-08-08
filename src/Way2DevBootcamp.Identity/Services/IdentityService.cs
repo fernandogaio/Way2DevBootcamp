@@ -2,9 +2,10 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using Way2DevBootcamp.Application.Interfaces;
-using Way2DevBootcamp.Application.ViewModels;
 using Way2DevBootcamp.Identity.Configurations;
+using Way2DevBootcamp.Identity.Enumerators;
+using Way2DevBootcamp.Identity.Interfaces;
+using Way2DevBootcamp.Identity.Results;
 
 namespace Way2DevBootcamp.Identity.Services;
 public class IdentityService : IIdentityService {
@@ -20,91 +21,69 @@ public class IdentityService : IIdentityService {
         _jwtOptions = jwtOptions.Value;
     }
 
-    public async Task<UsuarioViewModelOutput> CadastrarUsuario(UsuarioViewModelInput usuarioCadastro) {
-        var identityUser = new IdentityUser {
-            UserName = usuarioCadastro.Email,
-            Email = usuarioCadastro.Email,
-            EmailConfirmed = true
-        };
-
-        var result = await _userManager.CreateAsync(identityUser, usuarioCadastro.Senha);
+    public async Task<IdentityResult> AddUser(IdentityUser user, string password) {
+        var result = await _userManager.CreateAsync(user, password);
         if (result.Succeeded)
-            await _userManager.SetLockoutEnabledAsync(identityUser, false);
+            await _userManager.SetLockoutEnabledAsync(user, false);
 
-        var usuarioCadastroOutput = new UsuarioViewModelOutput(result.Succeeded);
-        if (!result.Succeeded && result.Errors.Any())
-            usuarioCadastroOutput.AdicionarErros(result.Errors.Select(r => r.Description));
-
-        return usuarioCadastroOutput;
+        return result;
     }
 
-    public async Task<UsuarioLoginViewModelOutput> Login(UsuarioLoginViewModelInput usuarioLogin) {
-        var result = await _signInManager.PasswordSignInAsync(usuarioLogin.Email, usuarioLogin.Senha, false, true);
-        if (result.Succeeded)
-            return await GerarCredenciais(usuarioLogin.Email);
-
-        var usuarioLoginOutput = new UsuarioLoginViewModelOutput();
+    public async Task<LoginResult> Login(string email, string password) {
+        var result = await _signInManager.PasswordSignInAsync(email, password, false, true);
+        
         if (!result.Succeeded) {
             if (result.IsLockedOut)
-                usuarioLoginOutput.AdicionarErro("Essa conta está bloqueada");
+                return new LoginResult(EnumLoginResultErrors.IsLockedOut);
             else if (result.IsNotAllowed)
-                usuarioLoginOutput.AdicionarErro("Essa conta não tem permissão para fazer login");
+                return new LoginResult(EnumLoginResultErrors.IsNotAllowed);
             else if (result.RequiresTwoFactor)
-                usuarioLoginOutput.AdicionarErro("É necessário confirmar o login no seu segundo fator de autenticação");
+                return new LoginResult(EnumLoginResultErrors.RequiresTwoFactor);
             else
-                usuarioLoginOutput.AdicionarErro("Usuário ou senha estão incorretos");
+                return new LoginResult(EnumLoginResultErrors.InvalidCredentials);
         }
 
-        return usuarioLoginOutput;
+        return await GenerateCredentials(email);
     }
 
-    public async Task<UsuarioLoginViewModelOutput> LoginSemSenha(string usuarioId) {
-        var usuarioLoginOutput = new UsuarioLoginViewModelOutput();
-        var usuario = await _userManager.FindByIdAsync(usuarioId);
+    public async Task<LoginResult> LoginWithoutPassword(string userId) {
+        var user = await _userManager.FindByIdAsync(userId);
 
-        if (await _userManager.IsLockedOutAsync(usuario))
-            usuarioLoginOutput.AdicionarErro("Essa conta está bloqueada");
-        else if (!await _userManager.IsEmailConfirmedAsync(usuario))
-            usuarioLoginOutput.AdicionarErro("Essa conta precisa confirmar seu e-mail antes de realizar o login");
+        if (await _userManager.IsLockedOutAsync(user))
+            return new LoginResult(EnumLoginResultErrors.IsLockedOut);
+        else if (!await _userManager.IsEmailConfirmedAsync(user))
+            return new LoginResult(EnumLoginResultErrors.EmailNotConfirmed);
 
-        if (usuarioLoginOutput.Sucesso)
-            return await GerarCredenciais(usuario.Email);
-
-        return usuarioLoginOutput;
+        return await GenerateCredentials(user.Email);
     }
 
-    private async Task<UsuarioLoginViewModelOutput> GerarCredenciais(string email) {
+    private async Task<LoginResult> GenerateCredentials(string email) {
         var user = await _userManager.FindByEmailAsync(email);
-        var accessTokenClaims = await ObterClaims(user, adicionarClaimsUsuario: true);
-        var refreshTokenClaims = await ObterClaims(user, adicionarClaimsUsuario: false);
+        var accessTokenClaims = await GetClaims(user, addClaimsUser: true);
+        var refreshTokenClaims = await GetClaims(user, addClaimsUser: false);
 
-        var dataExpiracaoAccessToken = DateTime.Now.AddSeconds(_jwtOptions.AccessTokenExpiration);
-        var dataExpiracaoRefreshToken = DateTime.Now.AddSeconds(_jwtOptions.RefreshTokenExpiration);
+        var dateExpirationAccessToken = DateTime.Now.AddSeconds(_jwtOptions.AccessTokenExpiration);
+        var dateExpirationRefreshToken = DateTime.Now.AddSeconds(_jwtOptions.RefreshTokenExpiration);
 
-        var accessToken = GerarToken(accessTokenClaims, dataExpiracaoAccessToken);
-        var refreshToken = GerarToken(refreshTokenClaims, dataExpiracaoRefreshToken);
+        var accessToken = GenerateToken(accessTokenClaims, dateExpirationAccessToken);
+        var refreshToken = GenerateToken(refreshTokenClaims, dateExpirationRefreshToken);
 
-        return new UsuarioLoginViewModelOutput
-        (
-            sucesso: true,
-            accessToken: accessToken,
-            refreshToken: refreshToken
-        );
+        return new LoginResult(accessToken, refreshToken, dateExpirationAccessToken, dateExpirationRefreshToken);
     }
 
-    private string GerarToken(IEnumerable<Claim> claims, DateTime dataExpiracao) {
+    private string GenerateToken(IEnumerable<Claim> claims, DateTime dateExpiration) {
         var jwt = new JwtSecurityToken(
             issuer: _jwtOptions.Issuer,
             audience: _jwtOptions.Audience,
             claims: claims,
             notBefore: DateTime.Now,
-            expires: dataExpiracao,
+            expires: dateExpiration,
             signingCredentials: _jwtOptions.SigningCredentials);
 
         return new JwtSecurityTokenHandler().WriteToken(jwt);
     }
 
-    private async Task<IList<Claim>> ObterClaims(IdentityUser user, bool adicionarClaimsUsuario) {
+    private async Task<IList<Claim>> GetClaims(IdentityUser user, bool addClaimsUser) {
         var claims = new List<Claim> {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
@@ -113,7 +92,7 @@ public class IdentityService : IIdentityService {
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString())
             };
 
-        if (adicionarClaimsUsuario) {
+        if (addClaimsUser) {
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
 

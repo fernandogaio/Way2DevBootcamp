@@ -1,56 +1,56 @@
 ﻿using System.Security.Claims;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Way2DevBootcamp.Application.Interfaces;
+using Way2DevBootcamp.Application.Usuarios.Commands;
 using Way2DevBootcamp.Application.ViewModels;
+using Way2DevBootcamp.Identity.Interfaces;
 
 namespace Way2DevBootcamp.API.Controllers;
 [ApiController]
 [Route("v1/usuarios")]
 public class UsuariosController : ControllerBase {
     private readonly IIdentityService _identityService;
+    private readonly ISender _sender;
 
-    public UsuariosController(IIdentityService identityService) =>
+    public UsuariosController(IIdentityService identityService, ISender sender) { 
         _identityService = identityService;
+        _sender = sender;
+    }
 
-    [HttpPost("cadastro")]
-    public async Task<ActionResult<UsuarioViewModelOutput>> Cadastrar(UsuarioViewModelInput usuarioCadastro) {
-        if (!ModelState.IsValid)
-            return BadRequest();
+    [HttpPost("create")]
+    public async Task<ActionResult> Post([FromBody] CreateUsuarioCommand command) {
+        var response = await _sender.Send(command);
 
-        var resultado = await _identityService.CadastrarUsuario(usuarioCadastro);
-        if (resultado.Sucesso)
-            return Ok(resultado);
-        else if (resultado.Erros.Count > 0)
-            return BadRequest(resultado);
+        if (response.Errors.Any())
+            return BadRequest(response.Errors);
 
-        return StatusCode(StatusCodes.Status500InternalServerError);
+        return Ok(response.Result);
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<UsuarioLoginViewModelOutput>> Login(UsuarioLoginViewModelInput usuarioLogin) {
-        if (!ModelState.IsValid)
-            return BadRequest();
+    public async Task<ActionResult<LoginViewModel>> Login([FromBody] LoginUsuarioCommand command) {
+        var response = await _sender.Send(command);
 
-        var resultado = await _identityService.Login(usuarioLogin);
-        if (resultado.Sucesso)
-            return Ok(resultado);
+        if (response.Errors.Any())
+            return Unauthorized(response.Errors);
 
-        return Unauthorized(resultado);
+        return Ok(response.Result);
     }
 
     [Authorize]
     [HttpPost("refresh-login")]
-    public async Task<ActionResult<UsuarioViewModelOutput>> RefreshLogin() {
+    public async Task<ActionResult<LoginViewModel>> RefreshLogin() {
         var identity = HttpContext.User.Identity as ClaimsIdentity;
         var usuarioId = identity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (usuarioId is null)
             return BadRequest();
 
-        var resultado = await _identityService.LoginSemSenha(usuarioId);
-        if (resultado.Sucesso)
-            return Ok(resultado);
+        var response = await _sender.Send(new RefreshLoginUsuarioCommand(usuarioId));
 
-        return Unauthorized(resultado);
+        if (response.Errors.Any())
+            return Unauthorized(response.Errors);
+
+        return Ok(response.Result);
     }
 }

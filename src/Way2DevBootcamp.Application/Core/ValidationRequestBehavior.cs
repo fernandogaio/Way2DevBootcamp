@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
-using Way2DevBootcamp.Application.Notifications;
+using Way2DevBootcamp.Application.Core.Notifications;
 
 namespace Way2DevBootcamp.Application.Core;
 public class ValidationRequestBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse> where TResponse : CommandResponse {

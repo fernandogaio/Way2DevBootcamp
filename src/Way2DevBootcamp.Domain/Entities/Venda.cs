@@ -28,4 +28,7 @@ public class Venda : Entity {
         Itens = _itens;
         _itens.ForEach(item => { ValorTotal += item.Preco * item.Quantidade; });
     }
+
+    public void Cancel()
+        => StatusPedido = EnumStatusPedido.Cancelado;
 }
